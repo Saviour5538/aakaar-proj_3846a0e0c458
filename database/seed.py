@@ -1,0 +1,42 @@
+import uuid
+from datetime import datetime, timedelta
+from database.models import Base, engine, SessionLocal, User, Document, Chunk, Conversation, Message, Session
+
+def seed_database():
+    session = SessionLocal()
+    try:
+        # Create sample users
+        user1 = User(
+            id=str(uuid.uuid4()),
+            email="alice@example.com",
+            password_hash="hashed_password_1",
+            role="member",
+            created_at=datetime.utcnow()
+        )
+        user2 = User(
+            id=str(uuid.uuid4()),
+            email="bob@example.com",
+            password_hash="hashed_password_2",
+            role="member",
+            created_at=datetime.utcnow()
+        )
+        user3 = User(
+            id=str(uuid.uuid4()),
+            email="charlie@example.com",
+            password_hash="hashed_password_3",
+            role="admin",
+            created_at=datetime.utcnow()
+        )
+        session.add_all([user1, user2, user3])
+
+        # Commit the changes
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
+
+if __name__ == "__main__":
+    Base.metadata.create_all(bind=engine)
+    seed_database()
